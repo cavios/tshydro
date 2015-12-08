@@ -38,8 +38,7 @@ License: \tab GPL-2\cr
 Karina Nielsen
 }
 \references{
-Nielsen et al. 2015, Validation of CryoSat-2 SAR mode based lake
-levels. Submitted to Remote Sensing of Environment.
+Nielsen, K., Stenseng, L., Andersen, O. B., Villadsen, H., & Knudsen, P. (2015). Validation of CryoSat-2 SAR mode based lake levels. Remote Sensing of Environment, 171, 162-170.
 }
 \keyword{ package }
 \seealso{\code{\link{get.TS}}, \code{\link{plot.tsHydro}},\code{\link{summary.tsHydro}},\code{\link{export.tsHydro}} 
