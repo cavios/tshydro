@@ -1,10 +1,10 @@
 get.TS <-
 function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), estP=FALSE){
-
+  sorttime<-sort(unique(dat$time))
   data <- list(
     height=dat$height,
-    times=unique(dat$time),
-    timeidx=as.integer(dat$track)
+    times=sorttime,
+    timeidx=match(dat$time, sorttime)
   )
   
   parameters <- list(

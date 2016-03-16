@@ -1,8 +1,8 @@
 Package: tsHydro
 Type: Package
 Title: What the package does (short line)
-Version: 0.0.2
-Date: 2015-08-12
+Version: 0.0.3
+Date: 2016-03-16
 Author: Karina Nielsen
 Maintainer: Karina Nielsen <karni@space.dtu.dk>
 Description: More about what it does (maybe more than one line)

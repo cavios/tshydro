@@ -2,7 +2,7 @@ R=R
 # -> you can do    R=R-devel  make .
 
 PACKAGE=tsHydro
-VERSION=0.0.2
+VERSION=0.0.3
 TARBALL=${PACKAGE}_${VERSION}.tar.gz
 ZIPFILE=${PACKAGE}_${VERSION}.zip
 
