@@ -3,7 +3,7 @@
 \title{Plotting of time series}
 \description{Function for plotting the output of the class "tsHydro"}
 \usage{
-plot.tsHydro(x, addRawDat = FALSE, addLine = FALSE, addError = FALSE, zoomOut = FALSE, ...)
+plot.tsHydro(x, addRawDat = TRUE, addLine = TRUE, addError = FALSE, zoomOut = FALSE,lwd=4,col='blue', ...)
 }
 
 \arguments{
@@ -23,6 +23,14 @@ To add error bars
 To zoom out. This option creates a plot which displays the range of the
   water level data.
 }
+ \item{lwd}{
+...
+}
+\item{col}{
+...
+}
+ 
+
   \item{\dots}{
 other parameters to be passed through to plotting functions
 }
