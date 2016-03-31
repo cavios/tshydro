@@ -22,6 +22,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(height);
   DATA_VECTOR(times);
   DATA_IVECTOR(timeidx);
+  DATA_IARRAY(trackinfo);
 
   PARAMETER(logSigma);
   PARAMETER(logSigmaRW);
@@ -30,6 +31,7 @@ Type objective_function<Type>::operator() ()
 
   int timeSteps=times.size();
   int obsDim=height.size();
+  int noTracks=trackinfo.dim[0];
 
   Type p=ilogit(logitp); 
   
@@ -40,7 +42,12 @@ Type objective_function<Type>::operator() ()
     ans += -dnorm(u(i),u(i-1),sdRW*sqrt(times(i)-times(i-1)),true); 
 
   Type sdObs=exp(logSigma);
-  for(int i=0;i<obsDim;i++)
-    ans += nldens(height(i),u(timeidx(i)-1),sdObs,p); 
+  for(int t=0;t<noTracks;t++){
+    vector<Type> sub=height.segment(trackinfo(t,0),trackinfo(t,2));
+    for(int i=0;i<trackinfo(t,2);i++){
+      ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1),sdObs,p);
+    } 
+  }
+
   return ans;
 }

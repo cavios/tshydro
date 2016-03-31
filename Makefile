@@ -37,7 +37,8 @@ quick-install: $(PACKAGE)/src/tsHydro.so
 	$(R) CMD INSTALL $(PACKAGE)
 
 $(PACKAGE)/src/tsHydro.so: $(PACKAGE)/src/track.cpp
-	cd $(PACKAGE)/src; echo "library(TMB); compile('track.cpp','-O0 -g')" | $(R) --slave
+##	cd $(PACKAGE)/src; echo "library(TMB); compile('track.cpp','-O0 -g')" | $(R) --slave
+	cd $(PACKAGE)/src; echo "library(TMB); compile('track.cpp')" | $(R) --slave
 	cd $(PACKAGE)/src; mv track.so tsHydro.so
 
 unexport TEXINPUTS

@@ -1,10 +1,19 @@
 get.TS <-
 function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), estP=FALSE){
   sorttime<-sort(unique(dat$time))
+
+  o<-order(dat$track)
+  dat<-dat[o,]
+
+  obsfrom=sapply(unique(dat$track), function(i)min(which(dat$track==i)))-1
+  obsto=sapply(unique(dat$track), function(i)max(which(dat$track==i)))-1
+  obsn=obsto-obsfrom+1
+  
   data <- list(
     height=dat$height,
     times=sorttime,
-    timeidx=match(dat$time, sorttime)
+    timeidx=match(dat$time, sorttime),
+    trackinfo=cbind(obsfrom,obsto,obsn)
   )
   
   parameters <- list(
