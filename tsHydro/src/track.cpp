@@ -23,6 +23,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(times);
   DATA_IVECTOR(timeidx);
   DATA_IARRAY(trackinfo);
+  DATA_VECTOR(weights);
 
   PARAMETER(logSigma);
   PARAMETER(logSigmaRW);
@@ -44,8 +45,9 @@ Type objective_function<Type>::operator() ()
   Type sdObs=exp(logSigma);
   for(int t=0;t<noTracks;t++){
     vector<Type> sub=height.segment(trackinfo(t,0),trackinfo(t,2));
+    vector<Type> subw=weights.segment(trackinfo(t,0),trackinfo(t,2));
     for(int i=0;i<trackinfo(t,2);i++){
-      ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1),sdObs,p);
+      ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1),sdObs/sqrt(subw(i)),p);
     } 
   }
 
