@@ -1,5 +1,5 @@
 get.TS <-
-function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), estP=FALSE, weights=rep(1,nrow(dat))){
+function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), priorHeight=numeric(0), priorSd=numeric(0), estP=FALSE, weights=rep(1,nrow(dat))){
   sorttime<-sort(unique(dat$time))
 
   o<-order(dat$track)
@@ -14,7 +14,9 @@ function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), 
     times=sorttime,
     timeidx=match(dat$time, sorttime),
     trackinfo=cbind(obsfrom,obsto,obsn),
-    weights=weights[o]  
+    weights=weights[o],
+    priorHeight=priorHeight,
+    priorSd=priorSd
   )
   
   parameters <- list(

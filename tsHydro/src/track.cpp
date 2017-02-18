@@ -24,6 +24,8 @@ Type objective_function<Type>::operator() ()
   DATA_IVECTOR(timeidx);
   DATA_IARRAY(trackinfo);
   DATA_VECTOR(weights);
+  DATA_VECTOR(priorHeight);
+  DATA_VECTOR(priorSd);
 
   PARAMETER(logSigma);
   PARAMETER(logSigmaRW);
@@ -37,17 +39,28 @@ Type objective_function<Type>::operator() ()
   Type p=ilogit(logitp); 
   
   Type ans=0;
+
+  if(priorHeight.size()==1){
+    ans += -sum(dnorm(u, priorHeight(0), priorSd(0), true));
+  }
  
   Type sdRW=exp(logSigmaRW);
-  for(int i=1;i<timeSteps;i++)
+  for(int i=1;i<timeSteps;i++){
     ans += -dnorm(u(i),u(i-1),sdRW*sqrt(times(i)-times(i-1)),true); 
+  }
 
   Type sdObs=exp(logSigma);
   for(int t=0;t<noTracks;t++){
     vector<Type> sub=height.segment(trackinfo(t,0),trackinfo(t,2));
     vector<Type> subw=weights.segment(trackinfo(t,0),trackinfo(t,2));
     for(int i=0;i<trackinfo(t,2);i++){
-      ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1),sdObs/sqrt(subw(i)),p);
+      if(priorHeight.size()==1){
+        if((sub(i)>(priorHeight(0)-Type(5)*priorSd(0))) && (sub(i)<(priorHeight(0)+Type(5)*priorSd(0)))){
+          ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1),sdObs/sqrt(subw(i)),p);
+        } 
+      }else{
+        ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1),sdObs/sqrt(subw(i)),p);
+      }
     } 
   }
 

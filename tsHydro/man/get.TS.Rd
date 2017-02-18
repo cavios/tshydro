@@ -7,7 +7,8 @@ get.TS
 Estimate the model parameters and return the estimated water levels
 }
 \usage{
-get.TS(dat, init.logsigmarw = 0, init.logSigma = 10, init.logit = log(0.3/(1 - 0.3)), estP = FALSE, weights=rep(1,nrow(dat)))
+get.TS(dat, init.logsigmarw = 0, init.logSigma = 10, init.logit =
+log(0.3/(1 - 0.3)), priorHeight=numeric(0), priorSd=numeric(0), estP = FALSE, weights=rep(1,nrow(dat)))
 }
 
 \arguments{
@@ -23,6 +24,12 @@ Initial value for the log of the standard
 }
   \item{init.logit}{
 Initial value for the logit of the fraction of outliers 
+}
+  \item{priorHeight}{
+...
+}
+  \item{priorSd}{
+...
 }
   \item{estP}{
 A logic value \code{FALSE} if the outlier fraction is kept fixed at its
