@@ -32,10 +32,17 @@ function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), 
 
   pl <- obj$env$parList()
   rep<-sdreport(obj, getJointPrecision=TRUE)
-  allsd<-sqrt(diag(solve(rep$jointPrecision)))
+  cov<-solve(rep$jointPrecision)
+  nU<-length(pl$u)
+  allsd<-sqrt(diag(cov))
+  idx<-rownames(cov)=="u"
+  cov<-cov[idx,idx]
   plsd <- obj$env$parList(par=allsd)
-
-  ret<-list(pl=pl,plsd=plsd, data=data, opt=opt, obj=obj)
+  W<-1/plsd$u^2
+  W<-W/sum(W)
+  aveH<-W%*%pl$u
+  sdAveH<-sqrt(t(W)%*%cov%*%W)
+  ret<-list(pl=pl,plsd=plsd, data=data, opt=opt, obj=obj, aveH=aveH, sdAveH=sdAveH)
   class(ret)<-"tsHydro"
   return(ret)
 }
