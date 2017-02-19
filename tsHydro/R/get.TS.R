@@ -38,10 +38,11 @@ function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), 
   idx<-rownames(cov)=="u"
   cov<-cov[idx,idx]
   plsd <- obj$env$parList(par=allsd)
-  W<-1/plsd$u^2
-  W<-W/sum(W)
-  aveH<-W%*%pl$u
-  sdAveH<-sqrt(t(W)%*%cov%*%W)
+  X<-rep(1,nU)
+  P<-solve(cov)
+  QQ<-solve(t(X)%*%P%*%X)%*%X%*%P
+  aveH<-QQ%*%pl$u
+  sdAveH<-sqrt(QQ%*%cov%*%t(QQ))
   ret<-list(pl=pl,plsd=plsd, data=data, opt=opt, obj=obj, aveH=aveH, sdAveH=sdAveH)
   class(ret)<-"tsHydro"
   return(ret)
