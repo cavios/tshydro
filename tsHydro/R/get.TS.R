@@ -17,7 +17,7 @@ get.TS <-function(dat, init.h=0,init.logsigmarw=0,
 {
     if(is.null(dat$satid)) dat$satid<-rep(0,nrow(dat))
     if(is.null(dat$qf)) dat$qf<-rep(0,nrow(dat))
-    sorttime<-sort(unique(dat$time))
+    sorttime<-sort(unique(c(dat$time, newdat$time)))
 
     o<-order(dat$track)
     dat<-dat[o,]
@@ -30,6 +30,8 @@ get.TS <-function(dat, init.h=0,init.logsigmarw=0,
     height=dat$height,
     times=sorttime,
     timeidx=match(dat$time, sorttime),
+    newtimeidx=match(newdat$time, sorttime),
+    group=if(!is.null(newdat$group)){newdat$group}else{numeric(0)},
     trackinfo=cbind(obsfrom,obsto,obsn),
     satid=dat$satid,
     qfid=dat$qf,
@@ -62,7 +64,14 @@ get.TS <-function(dat, init.h=0,init.logsigmarw=0,
   rep<-sdreport(obj)
   pl<-as.list(rep, "Est")
   plsd<-as.list(rep, "Std")
-  ret<-list(pl=pl,plsd=plsd, data=data, opt=opt, obj=obj, aveH=rep$value[names(rep$value)=="aveH"], sdAveH=rep$sd[names(rep$value)=="aveH"])
+  newdat$est<-pl$u[data$newtimeidx]
+  newdat$sd<-plsd$u[data$newtimeidx]
+  pl$u<-pl$u[unique(data$timeidx)]
+  plsd$u<-plsd$u[unique(data$timeidx)]
+  obstimes<-data$times[unique(data$timeidx)]
+  groupAve<-data.frame(Est=as.list(rep, "Est", report=TRUE)$groupAve,
+                       Std=as.list(rep, "Std", report=TRUE)$groupAve)  
+  ret<-list(pl=pl,plsd=plsd, data=data, opt=opt, obj=obj, aveH=rep$value[names(rep$value)=="aveH"], sdAveH=rep$sd[names(rep$value)=="aveH"], newdat=newdat, obstimes=obstimes, groupAve=groupAve)
   class(ret)<-"tsHydro"
   return(ret)
 }

@@ -22,6 +22,8 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(height);
   DATA_VECTOR(times);
   DATA_IVECTOR(timeidx);
+  DATA_IVECTOR(newtimeidx);
+  DATA_IVECTOR(group);
   DATA_IVECTOR(satid);
   DATA_IVECTOR(qfid);
   DATA_IARRAY(trackinfo);
@@ -86,6 +88,18 @@ Type objective_function<Type>::operator() ()
 
   Type aveH=sum(u)/u.size();
   ADREPORT(aveH);
+  if(group.size()>0){
+    int ngroup=group.maxCoeff();
+    vector<Type> groupAve(ngroup); groupAve.setZero();
+    vector<Type> groupN(ngroup); groupAve.setZero();
+    for(int i=0; i<newtimeidx.size(); ++i){
+      groupAve(group(i)-1)+=u(newtimeidx(i));
+      groupN(group(i)-1)+=1;
+    }
+    groupAve/=groupN;
+  
+    ADREPORT(groupAve);
+  }   
   REPORT(pred);
   return ans;
 }
