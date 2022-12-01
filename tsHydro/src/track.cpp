@@ -22,16 +22,29 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(height);
   DATA_VECTOR(times);
   DATA_IVECTOR(timeidx);
+  DATA_IVECTOR(satid);
+  DATA_IVECTOR(qfid);
   DATA_IARRAY(trackinfo);
   DATA_VECTOR(weights);
   DATA_VECTOR(priorHeight);
   DATA_VECTOR(priorSd);
+  DATA_INTEGER(varPerTrack);
+  DATA_INTEGER(varPerQuality);
+  DATA_IVECTOR(trackidx);
+  
+  vector<Type> pred(height.size());
+  pred.setZero();
 
-  PARAMETER(logSigma);
+  PARAMETER_VECTOR(logSigma);
   PARAMETER(logSigmaRW);
   PARAMETER(logitp);
   PARAMETER_VECTOR(u);
+  PARAMETER_VECTOR(bias);
 
+  vector<Type> biasvec(bias.size()+1);
+  biasvec(0)=0;
+  for(int i=1; i<biasvec.size();++i)biasvec(i)=bias(i-1);
+    
   int timeSteps=times.size();
   int obsDim=height.size();
   int noTracks=trackinfo.dim[0];
@@ -49,20 +62,30 @@ Type objective_function<Type>::operator() ()
     ans += -dnorm(u(i),u(i-1),sdRW*sqrt(times(i)-times(i-1)),true); 
   }
 
-  Type sdObs=exp(logSigma);
+  vector<Type> sdObs=exp(logSigma);
   for(int t=0;t<noTracks;t++){
     vector<Type> sub=height.segment(trackinfo(t,0),trackinfo(t,2));
     vector<Type> subw=weights.segment(trackinfo(t,0),trackinfo(t,2));
+    vector<int> subsatid=satid.segment(trackinfo(t,0),trackinfo(t,2));
+    vector<int> subtrackid=trackidx.segment(trackinfo(t,0),trackinfo(t,2));
+    vector<int> subqfid=qfid.segment(trackinfo(t,0),trackinfo(t,2));
+    int idxVar;
     for(int i=0;i<trackinfo(t,2);i++){
+      if(varPerTrack==1){idxVar=subtrackid(i);}else{idxVar=subsatid(i);}
+      if(varPerQuality==1){idxVar=subqfid(i);}else{idxVar=subsatid(i);}      
       if(priorHeight.size()==1){
         if((sub(i)>(priorHeight(0)-Type(5)*priorSd(0))) && (sub(i)<(priorHeight(0)+Type(5)*priorSd(0)))){
-          ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1),sdObs/sqrt(subw(i)),p);
+          ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1)+biasvec(subsatid(i)),sdObs(idxVar)/sqrt(subw(i)),p);
         } 
       }else{
-        ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1),sdObs/sqrt(subw(i)),p);
+        ans += nldens(sub(i),u(timeidx(trackinfo(t,0))-1)+biasvec(subsatid(i)),sdObs(idxVar)/sqrt(subw(i)),p);
       }
+      pred(trackinfo(t,0)+i)=u(timeidx(trackinfo(t,0))-1)+biasvec(subsatid(i));
     } 
   }
 
+  Type aveH=sum(u)/u.size();
+  ADREPORT(aveH);
+  REPORT(pred);
   return ans;
 }

@@ -1,9 +1,26 @@
-get.TS <-
-function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), priorHeight=numeric(0), priorSd=numeric(0), estP=FALSE, weights=rep(1,nrow(dat))){
-  sorttime<-sort(unique(dat$time))
+getSigmaInit<-function(id){
+  if(is.null(id)){10}else{rep(10,length(unique(id)))}
+}
 
-  o<-order(dat$track)
-  dat<-dat[o,]
+
+get.TS <-function(dat, init.h=0,init.logsigmarw=0,
+             init.logSigma=getSigmaInit(dat$satid),
+             bias=rep(0,length(unique(dat$satid))-1),
+             init.logit=log(0.3/(1-0.3)), priorHeight=numeric(0),
+             priorSd=numeric(0),
+             estP=FALSE,
+             weights=rep(1,nrow(dat)),
+             varPerTrack=FALSE,
+             varPerQuality=FALSE,
+             newdat=NULL,
+             ...)
+{
+    if(is.null(dat$satid)) dat$satid<-rep(0,nrow(dat))
+    if(is.null(dat$qf)) dat$qf<-rep(0,nrow(dat))
+    sorttime<-sort(unique(dat$time))
+
+    o<-order(dat$track)
+    dat<-dat[o,]
 
   obsfrom=sapply(unique(dat$track), function(i)min(which(dat$track==i)))-1
   obsto=sapply(unique(dat$track), function(i)max(which(dat$track==i)))-1
@@ -14,36 +31,38 @@ function(dat, init.logsigmarw=0, init.logSigma=10, init.logit=log(0.3/(1-0.3)), 
     times=sorttime,
     timeidx=match(dat$time, sorttime),
     trackinfo=cbind(obsfrom,obsto,obsn),
+    satid=dat$satid,
+    qfid=dat$qf,
     weights=weights[o],
     priorHeight=priorHeight,
-    priorSd=priorSd
-  )
-  
+    priorSd=priorSd,
+    varPerTrack=ifelse(varPerTrack,1,0),
+    varPerQuality=ifelse(varPerQuality,1,0),
+    trackidx=as.integer(as.factor(dat$track))-1
+ )
+  if(varPerTrack){
+      init.logSigma <- getSigmaInit(dat$track)
+  }
+
+  if(varPerQuality){
+      init.logSigma <- getSigmaInit(dat$qf)
+  }
   parameters <- list(
     logSigma=init.logSigma,
     logSigmaRW=init.logsigmarw,
     logitp=init.logit,
-    u=0*data$times
+    u=rep(init.h,length(data$times)),
+    bias=bias
     )
 
-  obj <- MakeADFun(data,parameters,random="u",DLL="tsHydro", map=list(logitp=factor(ifelse(estP,1,NA))))
+  obj <- MakeADFun(data,parameters,random="u",DLL="tsHydro", map=list(logitp=factor(ifelse(estP,1,NA)),...))
   
   opt<-nlminb(obj$par,obj$fn,obj$gr)
 
-  pl <- obj$env$parList()
-  rep<-sdreport(obj, getJointPrecision=TRUE)
-  cov<-solve(rep$jointPrecision)
-  nU<-length(pl$u)
-  allsd<-sqrt(diag(cov))
-  idx<-rownames(cov)=="u"
-  cov<-cov[idx,idx]
-  plsd <- obj$env$parList(par=allsd)
-  X<-rep(1,nU)
-  P<-solve(cov)
-  QQ<-solve(t(X)%*%P%*%X)%*%X%*%P
-  aveH<-QQ%*%pl$u
-  sdAveH<-sqrt(QQ%*%cov%*%t(QQ))
-  ret<-list(pl=pl,plsd=plsd, data=data, opt=opt, obj=obj, aveH=aveH, sdAveH=sdAveH)
+  rep<-sdreport(obj)
+  pl<-as.list(rep, "Est")
+  plsd<-as.list(rep, "Std")
+  ret<-list(pl=pl,plsd=plsd, data=data, opt=opt, obj=obj, aveH=rep$value[names(rep$value)=="aveH"], sdAveH=rep$sd[names(rep$value)=="aveH"])
   class(ret)<-"tsHydro"
   return(ret)
 }
