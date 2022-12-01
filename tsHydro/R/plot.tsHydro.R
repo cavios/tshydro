@@ -1,7 +1,7 @@
 plot.tsHydro <-
 function(x,addRawDat=TRUE,addLine=TRUE,addError=FALSE,zoomOut=FALSE,lwd=4,col='blue',...)
     {
-        time<-x$data$times
+        time<-x$obstimes
         wl<-x$pl$u
         wlsd<-x$plsd$u
         delta<-(max(wl)-min(wl))*0.2
