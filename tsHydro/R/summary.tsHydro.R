@@ -1,3 +1,10 @@
+#' Summary of output
+#'
+#' This function presents a summary of the output
+#' @param x An object of class "tsHydro"
+#' @return Summary of output
+#' @export
+
 summary.tsHydro <- function(x){
 	npar <- length(x$opt$par)
 	logLik <- x$opt$objective

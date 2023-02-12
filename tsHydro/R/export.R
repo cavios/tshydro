@@ -1,3 +1,26 @@
+#' Export output
+#'
+#' This function saves the predicted water levels to a file
+#' @param x An object of class "tsHydro"
+#' @param filename Name of output file
+#' @param exportPar Logic variable to specify if the estimated model parameters are saved to a file "tsPar.dat".
+#' @param addError To add error bars
+#' @return The following elements
+#' \itemize{
+#' \item{oupfile("ts.dat") } A text file that contains three colunms;
+#' "time", "wl", "wlsd". "time" is the time of each pass, where the water
+#' level is estimated. "wl" is the estimated water level and "wlsd" is
+#' the standard deviation of the estimated water level.
+#' \item{"tspar.dat" } A text file that contains the optimized model parameters
+#' }
+#' @keywords plot
+#' @export
+#' @examples
+#'data(lakelevels)
+#' fit<-get.TS(lakelevels)
+#' export.tsHydro(fit,file="myTS.dat",exportPar=TRUE)
+#'
+
 export.tsHydro<-function(x, filename='ts.dat', exportPar=FALSE){
     time<-x$data$times
     wl<-x$pl$u

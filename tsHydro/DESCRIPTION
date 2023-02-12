@@ -1,13 +1,15 @@
 Package: tsHydro
-Type: Package
-Title: What the package does (short line)
-Version: 0.0.3
-Date: 2016-03-16
-Author: Karina Nielsen
-Maintainer: Karina Nielsen <karni@space.dtu.dk>
-Description: More about what it does (maybe more than one line)
-License: GPL-2
-LazyData: true
+Title: Reconstruct water level time series from satellite altimetry data
+Version: 0.0.0.9000
+Authors@R: 
+    person("Karina", "Nielsen", , "karni@space.dtu.dk", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
 Imports: TMB
 LinkingTo: TMB, RcppEigen
-
+LazyData: TRUE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
