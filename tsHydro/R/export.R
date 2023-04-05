@@ -22,7 +22,7 @@
 #'
 
 export.tsHydro<-function(x, filename='ts.dat', exportPar=FALSE){
-    time<-x$data$times
+    time<-x$obstimes
     wl<-x$pl$u
     wlsd<-x$plsd$u
     out<-cbind(time,wl,wlsd)
