@@ -89,15 +89,14 @@ Type objective_function<Type>::operator() ()
   Type aveH=sum(u)/u.size();
   ADREPORT(aveH);
   if(group.size()>0){
-    int ngroup=group.maxCoeff();
+    int ngroup=group.maxCoeff()+1;
     vector<Type> groupAve(ngroup); groupAve.setZero();
     vector<Type> groupN(ngroup); groupAve.setZero();
     for(int i=0; i<newtimeidx.size(); ++i){
-      groupAve(group(i)-1)+=u(newtimeidx(i));
-      groupN(group(i)-1)+=1;
+      groupAve(group(i))+=u(newtimeidx(i)-1);
+      groupN(group(i))+=1;
     }
     groupAve/=groupN;
-  
     ADREPORT(groupAve);
   }   
   REPORT(pred);
